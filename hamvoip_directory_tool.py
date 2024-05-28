@@ -34,7 +34,6 @@ def parse_args():
 
     return args
 
-
 def fetch_extensions_pdf_url():
     response = requests.get('https://hamvoip.nl/download.php')
     if response.status_code == 200:
@@ -103,18 +102,20 @@ def extract_extensions(text):
 
     return data_3digits, data_4digits, data_longer_than_4digits
 
-def generate_dapnet_csv(data_3digits):
+def generate_users_csv(data_3digits):
     if data_3digits:
-        df_users = pd.DataFrame(data_3digits, columns=['Extension', 'Callsign', 'Name'])
-        df_users = df_users[['Extension', 'Callsign']]
-        df_users.sort_values(by='Extension', inplace=True)
-        df_users.to_csv('hamvoip_dapnet.csv', index=False, header=['extension', 'callsign'])
+        df_users = pd.DataFrame(data_3digits, columns=['extension', 'callsign', 'name'])
+        df_users = df_users[['extension', 'callsign', 'name']]
+        df_users.sort_values(by='extension', inplace=True)
+        df_users.to_csv('hamvoip_users.csv', index=False, header=['Extension', 'Callsign', 'Name'])
+        print_summary('hamvoip_users.csv', len(data_3digits))
 
 def generate_other_csv(data_4digits, data_longer_than_4digits):
     if data_4digits or data_longer_than_4digits:
         df_other = pd.DataFrame(data_4digits + data_longer_than_4digits, columns=['Extension', 'Name'])
         df_other.sort_values(by='Extension', inplace=True)
         df_other.to_csv('hamvoip_other.csv', index=False)
+        print_summary('hamvoip_other.csv', len(data_4digits) + len(data_longer_than_4digits))
 
 def generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits):
     if data_3digits or data_4digits or data_longer_than_4digits:
@@ -125,7 +126,8 @@ def generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits):
         df_fanvil['ring'] = 'Default'
         df_fanvil['groups'] = ''
         df_fanvil.sort_values(by='work', inplace=True)
-        df_fanvil.to_csv('hamvoip_fanvil.csv', index=False, header=["name", "work", "mobile", "other", "ring", "groups"], quoting=1)
+        df_fanvil.to_csv('hamvoip_fanvil.csv', index=False, header=["name", "work", "mobile", "other", "ring", "groups"], quoting=csv.QUOTE_NONNUMERIC)
+        print_summary('hamvoip_fanvil.csv', len(combined_data))
 
 def generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits):
     combined_data = [[ext, f"{callsign} - {name}"] for ext, callsign, name in data_3digits] + data_4digits + data_longer_than_4digits
@@ -140,12 +142,15 @@ def generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits):
             f.write(f'<Telephone>{row["Extension"]}</Telephone>\n')
             f.write('</DirectoryEntry>\n')
         f.write('</CiscoIPPhoneDirectory>\n')
+        print_summary('hamvoip_cisco.xml', len(combined_data))
 
-def generate_users_csv(data_3digits):
-    with open('hamvoip_users.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Extension', 'Callsign', 'Name'])
-        writer.writerows(data_3digits)
+def generate_dapnet_csv(data_3digits):
+    if data_3digits:
+        df_users = pd.DataFrame(data_3digits, columns=['Extension', 'Callsign', 'Name'])
+        df_users = df_users[['Extension', 'Callsign']]
+        df_users.sort_values(by='Extension', inplace=True)
+        df_users.to_csv('hamvoip_dapnet.csv', index=False, header=['extension', 'callsign'])
+        print_summary('hamvoip_dapnet.csv', len(data_3digits))
 
 def remove_files():
     files_to_remove = ['hamvoip_users.csv', 'hamvoip_cisco.xml', 'hamvoip_fanvil.csv', 'hamvoip_other.csv', 'hamvoip_dapnet.csv']
@@ -156,6 +161,9 @@ def remove_files():
         else:
             print(f"Not found: {file_path}")
 
+def print_summary(file_name, entries):
+    print(f"File '{file_name}' created with {entries} entries.")
+
 # Main script execution
 args = parse_args()
 
@@ -164,7 +172,7 @@ if args.remove:
     exit()
 
 if not any(vars(args).values()):
-    parse_args().print_help()
+    print("No options provided. Use --help for usage information.")
     exit()
 
 pdf_url, version_number = fetch_extensions_pdf_url()

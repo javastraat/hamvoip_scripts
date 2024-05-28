@@ -13,16 +13,27 @@ import io
 import pdfplumber
 import re
 import pandas as pd
+import csv
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Hamvoip Directory Tool")
-    parser.add_argument("-u", "--users", action="store_true", help="Generate hamvoip_users.csv")
+    parser.add_argument("-a", "--all", action="store_true", help="Generate all CSVs and XML")
     parser.add_argument("-c", "--cisco", action="store_true", help="Generate hamvoip_cisco.xml")
+    parser.add_argument("-d", "--dapnet", action="store_true", help="Generate hamvoip_dapnet.csv")
     parser.add_argument("-f", "--fanvil", action="store_true", help="Generate hamvoip_fanvil.csv")
     parser.add_argument("-o", "--other", action="store_true", help="Generate hamvoip_other.csv")
-    parser.add_argument("-a", "--all", action="store_true", help="Generate all CSVs and XML")
     parser.add_argument("-r", "--remove", action="store_true", help="Remove CSV and XML files")
-    return parser.parse_args()
+    parser.add_argument("-u", "--users", action="store_true", help="Generate hamvoip_users.csv")
+    
+    args = parser.parse_args()
+
+    # Show help if no argument is given
+    if not any(vars(args).values()):
+        parser.print_help()
+        parser.exit()
+
+    return args
+
 
 def fetch_extensions_pdf_url():
     response = requests.get('https://hamvoip.nl/download.php')
@@ -31,7 +42,7 @@ def fetch_extensions_pdf_url():
         extensions_link = re.search(r'<a.*?href="downloads/extentions_(\d+\.\d+).pdf".*?>Download</a>', page_content, re.IGNORECASE)
         if extensions_link:
             version_number = extensions_link.group(1)
-            return f"https://hamvoip.nl/downloads/extentions_{version_number}.pdf"
+            return f"https://hamvoip.nl/downloads/extentions_{version_number}.pdf", version_number
         else:
             print("No extensions download URL found.")
             exit(1)
@@ -92,12 +103,12 @@ def extract_extensions(text):
 
     return data_3digits, data_4digits, data_longer_than_4digits
 
-def generate_users_csv(data_3digits):
+def generate_dapnet_csv(data_3digits):
     if data_3digits:
         df_users = pd.DataFrame(data_3digits, columns=['Extension', 'Callsign', 'Name'])
         df_users = df_users[['Extension', 'Callsign']]
         df_users.sort_values(by='Extension', inplace=True)
-        df_users.to_csv('hamvoip_users.csv', index=False, header=['extension', 'callsign'])
+        df_users.to_csv('hamvoip_dapnet.csv', index=False, header=['extension', 'callsign'])
 
 def generate_other_csv(data_4digits, data_longer_than_4digits):
     if data_4digits or data_longer_than_4digits:
@@ -130,8 +141,14 @@ def generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits):
             f.write('</DirectoryEntry>\n')
         f.write('</CiscoIPPhoneDirectory>\n')
 
+def generate_users_csv(data_3digits):
+    with open('hamvoip_users.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Extension', 'Callsign', 'Name'])
+        writer.writerows(data_3digits)
+
 def remove_files():
-    files_to_remove = ['hamvoip_users.csv', 'hamvoip_cisco.xml', 'hamvoip_fanvil.csv', 'hamvoip_other.csv']
+    files_to_remove = ['hamvoip_users.csv', 'hamvoip_cisco.xml', 'hamvoip_fanvil.csv', 'hamvoip_other.csv', 'hamvoip_dapnet.csv']
     for file_path in files_to_remove:
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -147,10 +164,10 @@ if args.remove:
     exit()
 
 if not any(vars(args).values()):
-    print("No options provided. Use --help for usage information.")
+    parse_args().print_help()
     exit()
 
-pdf_url = fetch_extensions_pdf_url()
+pdf_url, version_number = fetch_extensions_pdf_url()
 password = 'passw0rd'
 decrypted_pdf_data = download_decrypt_pdf(pdf_url, password)
 pdf_text = extract_text_from_pdf(decrypted_pdf_data)
@@ -164,11 +181,13 @@ elif args.cisco:
     generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits)
 elif args.other:
     generate_other_csv(data_4digits, data_longer_than_4digits)
+elif args.dapnet:
+    generate_dapnet_csv(data_3digits)
 elif args.all:
     generate_users_csv(data_3digits)
     generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits)
     generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits)
     generate_other_csv(data_4digits, data_longer_than_4digits)
+    generate_dapnet_csv(data_3digits)
 
 print("Process completed successfully.")
-

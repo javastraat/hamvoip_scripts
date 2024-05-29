@@ -25,7 +25,7 @@ Available Options:
 -y, --yealink: Generate hamvoip_yealink.csv file for Yealink phones.
 -r, --remove: Remove all generated CSV and XML files.
 ```
-```
+<text>
 -a, --all: This argument generates all available CSVs and XML files. If this argument is provided, the script generates CSVs for Cisco, Yealink, Fanvil, and Other phone systems, as well as an XML file for Cisco phones.
 
 -c, --cisco: This argument generates the hamvoip_cisco.xml file, which is specifically formatted for Cisco IP phones.
@@ -41,25 +41,7 @@ Available Options:
 -y, --yealink: This argument generates the hamvoip_yealink.csv file, which is a CSV file used for Yealink phones.
 
 -r, --remove: This argument removes all generated CSV and XML files. If this argument is provided, the script deletes the following files: hamvoip_users.csv, hamvoip_cisco.xml, hamvoip_fanvil.csv, hamvoip_other.csv, hamvoip_dapnet.csv, and hamvoip_yealink.csv.
-```
+</text>
 ## Requirements
 Python 3.11
 Required pip modules: requests, pypdf2, pdfplumber, pandas
-
-
-
-<code>
-
-Hamvoip Directory Tool
-
-options:
-  -h, --help     show this help message and exit
-  -a, --all      Generate all CSVs and XML
-  -c, --cisco    Generate hamvoip_cisco.xml
-  -d, --dapnet   Generate hamvoip_dapnet.csv
-  -f, --fanvil   Generate hamvoip_fanvil.csv
-  -o, --other    Generate hamvoip_other.csv
-  -u, --users    Generate hamvoip_users.csv
-  -y, --yealink  Generate hamvoip_yealink.csv
-  -r, --remove   Remove CSV and XML files
-  

@@ -43,5 +43,5 @@ Available Options:
 -r, --remove: This argument removes all generated CSV and XML files. If this argument is provided, the script deletes the following files: hamvoip_users.csv, hamvoip_cisco.xml, hamvoip_fanvil.csv, hamvoip_other.csv, hamvoip_dapnet.csv, and hamvoip_yealink.csv.
 </text>
 ## Requirements
-Python 3.11<br>
+Python 3.11</br>
 Required pip modules: requests, pypdf2, pdfplumber, pandas

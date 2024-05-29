@@ -4,7 +4,7 @@ Export Extension data from pdf to csv for hamvoip hamvoip.nl dapnet
 
 change password before usage
 
-This is a command-line tool for generating various CSV and XML files used in a Hamvoip directory system. It fetches extension data from a PDF hosted on the Hamvoip website, decrypts it, and extracts extension information. Then, based on the provided command-line arguments, it generates different output files such as CSVs for different phone systems like Cisco, Yealink, and Fanvil, as well as an XML file for Cisco phones. Additionally, it provides an option to remove the generated files. The script is designed to be versatile, allowing the user to generate specific files or all files at once.
+This is a command-line tool for generating various CSV and XML files used with a Hamvoip Phone System. It fetches extension data from a PDF hosted on the Hamvoip website, decrypts it, and extracts extension information. Then, based on the provided command-line arguments, it generates different output files such as CSVs for different phone systems like Cisco, Yealink, and Fanvil, as well as an XML file for Cisco phones. Additionally, it provides an option to remove the generated files. The script is designed to be versatile, allowing the user to generate specific files or all files at once.
 
 ## Usage
 

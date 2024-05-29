@@ -13,6 +13,21 @@ This is a command-line tool for generating various CSV and XML files used in a H
 
 ```bash
 python hamvoip_directory_tool.py [options]
+```
+## Options
+Available Options:
+-a, --all: Generate all available CSVs and XML files.
+-c, --cisco: Generate hamvoip_cisco.xml file for Cisco phones.
+-d, --dapnet: Generate hamvoip_dapnet.csv file for the DAPNET system.
+-f, --fanvil: Generate hamvoip_fanvil.csv file for Fanvil phones.
+-o, --other: Generate hamvoip_other.csv file for other phone systems.
+-u, --users: Generate hamvoip_users.csv file with basic user information.
+-y, --yealink: Generate hamvoip_yealink.csv file for Yealink phones.
+-r, --remove: Remove all generated CSV and XML files.
+
+## Requirements
+Python 3.11
+Required pip modules: requests, pypdf2, pdfplumber, pandas
 
 -a, --all: This argument generates all available CSVs and XML files. If this argument is provided, the script generates CSVs for Cisco, Yealink, Fanvil, and Other phone systems, as well as an XML file for Cisco phones.
 

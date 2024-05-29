@@ -16,6 +16,9 @@ import pandas as pd
 import csv
 
 def parse_args():
+    """
+    Parse and return command line arguments.
+    """
     parser = argparse.ArgumentParser(description="Hamvoip Directory Tool")
     parser.add_argument("-a", "--all", action="store_true", help="Generate all CSVs and XML")
     parser.add_argument("-c", "--cisco", action="store_true", help="Generate hamvoip_cisco.xml")
@@ -24,6 +27,7 @@ def parse_args():
     parser.add_argument("-o", "--other", action="store_true", help="Generate hamvoip_other.csv")
     parser.add_argument("-r", "--remove", action="store_true", help="Remove CSV and XML files")
     parser.add_argument("-u", "--users", action="store_true", help="Generate hamvoip_users.csv")
+    parser.add_argument("-y", "--yealink", action="store_true", help="Generate hamvoip_yealink.csv")
     
     args = parser.parse_args()
 
@@ -35,6 +39,9 @@ def parse_args():
     return args
 
 def fetch_extensions_pdf_url():
+    """
+    Fetch and return the URL of the latest extensions PDF from the Hamvoip website.
+    """
     response = requests.get('https://hamvoip.nl/download.php')
     if response.status_code == 200:
         page_content = response.text
@@ -50,6 +57,9 @@ def fetch_extensions_pdf_url():
         exit(1)
 
 def download_decrypt_pdf(url, password):
+    """
+    Download and decrypt the PDF from the given URL using the provided password.
+    """
     response_pdf = requests.get(url)
     if response_pdf.status_code == 200:
         pdf_data = io.BytesIO(response_pdf.content)
@@ -71,6 +81,9 @@ def download_decrypt_pdf(url, password):
     return decrypted_pdf_data
 
 def extract_text_from_pdf(pdf_data):
+    """
+    Extract and return text from the decrypted PDF data.
+    """
     extracted_text = []
     with pdfplumber.open(pdf_data) as pdf:
         for page in pdf.pages:
@@ -79,6 +92,9 @@ def extract_text_from_pdf(pdf_data):
     return "\n".join(extracted_text)
 
 def extract_extensions(text):
+    """
+    Extract and return 3-digit, 4-digit, and longer-than-4-digit extensions from the extracted text.
+    """
     pattern_3digits = re.compile(r'(3\d{2}) - ([A-Z0-9]+) - ([^0-9\n]+)')
     pattern_4digits = re.compile(r'(\d{4,}) - (.*?)(?=\d{4,} -|\n|$)')
 
@@ -103,6 +119,9 @@ def extract_extensions(text):
     return data_3digits, data_4digits, data_longer_than_4digits
 
 def generate_users_csv(data_3digits):
+    """
+    Generate hamvoip_users.csv file from 3-digit extensions data.
+    """
     if data_3digits:
         df_users = pd.DataFrame(data_3digits, columns=['extension', 'callsign', 'name'])
         df_users = df_users[['extension', 'callsign', 'name']]
@@ -111,6 +130,9 @@ def generate_users_csv(data_3digits):
         print_summary('hamvoip_users.csv', len(data_3digits))
 
 def generate_other_csv(data_4digits, data_longer_than_4digits):
+    """
+    Generate hamvoip_other.csv file from 4-digit and longer-than-4-digit extensions data.
+    """
     if data_4digits or data_longer_than_4digits:
         df_other = pd.DataFrame(data_4digits + data_longer_than_4digits, columns=['Extension', 'Name'])
         df_other.sort_values(by='Extension', inplace=True)
@@ -118,6 +140,9 @@ def generate_other_csv(data_4digits, data_longer_than_4digits):
         print_summary('hamvoip_other.csv', len(data_4digits) + len(data_longer_than_4digits))
 
 def generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits):
+    """
+    Generate hamvoip_fanvil.csv file from 3-digit, 4-digit, and longer-than-4-digit extensions data.
+    """
     if data_3digits or data_4digits or data_longer_than_4digits:
         combined_data = [[ext, f"{callsign} - {name}"] for ext, callsign, name in data_3digits] + data_4digits + data_longer_than_4digits
         df_fanvil = pd.DataFrame(combined_data, columns=['work', 'name'])
@@ -130,6 +155,9 @@ def generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits):
         print_summary('hamvoip_fanvil.csv', len(combined_data))
 
 def generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits):
+    """
+    Generate hamvoip_cisco.xml file from 3-digit, 4-digit, and longer-than-4-digit extensions data.
+    """
     combined_data = [[ext, f"{callsign} - {name}"] for ext, callsign, name in data_3digits] + data_4digits + data_longer_than_4digits
     df_cisco = pd.DataFrame(combined_data, columns=['Extension', 'Name'])
     with open('hamvoip_cisco.xml', 'w') as f:
@@ -145,15 +173,44 @@ def generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits):
         print_summary('hamvoip_cisco.xml', len(combined_data))
 
 def generate_dapnet_csv(data_3digits):
+    """
+    Generate hamvoip_dapnet.csv file from 3-digit extensions data.
+    """
     if data_3digits:
-        df_users = pd.DataFrame(data_3digits, columns=['Extension', 'Callsign', 'Name'])
-        df_users = df_users[['Extension', 'Callsign']]
-        df_users.sort_values(by='Extension', inplace=True)
-        df_users.to_csv('hamvoip_dapnet.csv', index=False, header=['extension', 'callsign'])
+        df_dapnet = pd.DataFrame(data_3digits, columns=['Extension', 'Callsign', 'Name'])
+        df_dapnet = df_dapnet[['Extension', 'Callsign']]
+        df_dapnet.sort_values(by='Extension', inplace=True)
+        df_dapnet.to_csv('hamvoip_dapnet.csv', index=False, header=['extension', 'callsign'])
         print_summary('hamvoip_dapnet.csv', len(data_3digits))
 
+def generate_yealink_csv(data_3digits, data_4digits, data_longer_than_4digits):
+    """
+    Generate hamvoip_yealink.csv file from 3-digit, 4-digit, and longer-than-4-digit extensions data.
+    """
+    combined_data = [[ext, f"{callsign} - {name}"] for ext, callsign, name in data_3digits] + data_4digits + data_longer_than_4digits
+    df_yealink = pd.DataFrame(combined_data, columns=['Extension', 'Name'])
+    df_yealink['display_name'] = df_yealink['Name']
+    df_yealink['office_number'] = df_yealink['Extension']
+    df_yealink['mobile_number'] = ''
+    df_yealink['other_number'] = ''
+    df_yealink['line'] = '2'
+    df_yealink['ring'] = 'Auto'
+    df_yealink['auto_divert'] = ''
+    df_yealink['priority'] = ''
+    df_yealink['group_id_name'] = 'HamVoip'
+    df_yealink['default_photo'] = 'Default:default_contact_image.png'
+    df_yealink['photo_data'] = ''
+
+    df_yealink = df_yealink[['display_name', 'office_number', 'mobile_number', 'other_number', 'line', 'ring', 'auto_divert', 'priority', 'group_id_name', 'default_photo', 'photo_data']]
+    df_yealink.sort_values(by='office_number', inplace=True)
+    df_yealink.to_csv('hamvoip_yealink.csv', index=False)
+    print_summary('hamvoip_yealink.csv', len(combined_data))
+
 def remove_files():
-    files_to_remove = ['hamvoip_users.csv', 'hamvoip_cisco.xml', 'hamvoip_fanvil.csv', 'hamvoip_other.csv', 'hamvoip_dapnet.csv']
+    """
+    Remove generated CSV and XML files.
+    """
+    files_to_remove = ['hamvoip_users.csv', 'hamvoip_cisco.xml', 'hamvoip_fanvil.csv', 'hamvoip_other.csv', 'hamvoip_dapnet.csv', 'hamvoip_yealink.csv']
     for file_path in files_to_remove:
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -162,6 +219,9 @@ def remove_files():
             print(f"Not found: {file_path}")
 
 def print_summary(file_name, entries):
+    """
+    Print a summary of the generated file and the number of entries it contains.
+    """
     print(f"File '{file_name}' created with {entries} entries.")
 
 # Main script execution
@@ -191,11 +251,14 @@ elif args.other:
     generate_other_csv(data_4digits, data_longer_than_4digits)
 elif args.dapnet:
     generate_dapnet_csv(data_3digits)
+elif args.yealink:
+    generate_yealink_csv(data_3digits, data_4digits, data_longer_than_4digits)
 elif args.all:
     generate_users_csv(data_3digits)
     generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits)
     generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits)
     generate_other_csv(data_4digits, data_longer_than_4digits)
     generate_dapnet_csv(data_3digits)
+    generate_yealink_csv(data_3digits, data_4digits, data_longer_than_4digits)
 
 print("Process completed successfully.")

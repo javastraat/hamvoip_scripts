@@ -236,6 +236,10 @@ if not any(vars(args).values()):
     exit()
 
 pdf_url, version_number = fetch_extensions_pdf_url()
+
+pdf_url, version_number = fetch_extensions_pdf_url()
+print(f"Downloaded Hamvoip extensions PDF v{version_number}")
+
 password = 'passw0rd'
 decrypted_pdf_data = download_decrypt_pdf(pdf_url, password)
 pdf_text = extract_text_from_pdf(decrypted_pdf_data)

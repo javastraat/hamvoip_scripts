@@ -20,8 +20,8 @@ Available Options:
 -c, --cisco: Generate hamvoip_cisco.xml file for Cisco phones.
 -d, --dapnet: Generate hamvoip_dapnet.csv file for the DAPNET system.
 -f, --fanvil: Generate hamvoip_fanvil.csv file for Fanvil phones.
--o, --other: Generate hamvoip_other.csv file for other phone systems.
--u, --users: Generate hamvoip_users.csv file with basic user information.
+-o, --other: Generate hamvoip_other.csv file with other then user extensions.
+-u, --users: Generate hamvoip_users.csv file with user extension and information.
 -y, --yealink: Generate hamvoip_yealink.csv file for Yealink phones.
 -r, --remove: Remove all generated CSV and XML files.
 ```
@@ -34,9 +34,9 @@ Available Options:
 
 -f, --fanvil: This argument generates the hamvoip_fanvil.csv file, which is a CSV file used for Fanvil phones.
 
--o, --other: This argument generates the hamvoip_other.csv file, which is a CSV file used for phone systems other than Cisco, Yealink, or Fanvil.
+-o, --other: This argument generates the hamvoip_other.csv file, which contains other extensions (four or more digits).
 
--u, --users: This argument generates the hamvoip_users.csv file, which contains basic user information such as extension, callsign, and name.
+-u, --users: This argument generates the hamvoip_users.csv file, which contains user extension with information such as extension, callsign, and name.
 
 -y, --yealink: This argument generates the hamvoip_yealink.csv file, which is a CSV file used for Yealink phones.
 

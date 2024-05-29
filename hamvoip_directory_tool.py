@@ -255,10 +255,10 @@ elif args.yealink:
     generate_yealink_csv(data_3digits, data_4digits, data_longer_than_4digits)
 elif args.all:
     generate_users_csv(data_3digits)
-    generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits)
-    generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits)
     generate_other_csv(data_4digits, data_longer_than_4digits)
     generate_dapnet_csv(data_3digits)
+    generate_fanvil_csv(data_3digits, data_4digits, data_longer_than_4digits)
     generate_yealink_csv(data_3digits, data_4digits, data_longer_than_4digits)
+    generate_cisco_xml(data_3digits, data_4digits, data_longer_than_4digits)
 
 print("Process completed successfully.")

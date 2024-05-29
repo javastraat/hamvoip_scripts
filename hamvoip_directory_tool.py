@@ -25,9 +25,9 @@ def parse_args():
     parser.add_argument("-d", "--dapnet", action="store_true", help="Generate hamvoip_dapnet.csv")
     parser.add_argument("-f", "--fanvil", action="store_true", help="Generate hamvoip_fanvil.csv")
     parser.add_argument("-o", "--other", action="store_true", help="Generate hamvoip_other.csv")
-    parser.add_argument("-r", "--remove", action="store_true", help="Remove CSV and XML files")
     parser.add_argument("-u", "--users", action="store_true", help="Generate hamvoip_users.csv")
     parser.add_argument("-y", "--yealink", action="store_true", help="Generate hamvoip_yealink.csv")
+    parser.add_argument("-r", "--remove", action="store_true", help="Remove CSV and XML files")
     
     args = parser.parse_args()
 

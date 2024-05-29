@@ -16,6 +16,7 @@ python hamvoip_directory_tool.py [options]
 ```
 ## Options
 Available Options:
+```
 -a, --all: Generate all available CSVs and XML files.
 -c, --cisco: Generate hamvoip_cisco.xml file for Cisco phones.
 -d, --dapnet: Generate hamvoip_dapnet.csv file for the DAPNET system.
@@ -24,7 +25,7 @@ Available Options:
 -u, --users: Generate hamvoip_users.csv file with basic user information.
 -y, --yealink: Generate hamvoip_yealink.csv file for Yealink phones.
 -r, --remove: Remove all generated CSV and XML files.
-
+```
 ## Requirements
 Python 3.11
 Required pip modules: requests, pypdf2, pdfplumber, pandas

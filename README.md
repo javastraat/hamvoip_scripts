@@ -12,8 +12,7 @@ This script is a command-line tool for generating various CSV and XML files used
 
 <text>
 -a, --all: This argument generates all available CSVs and XML files. If this argument is provided, the script generates CSVs for Cisco, Yealink, Fanvil, and Other phone systems, as well as an XML file for Cisco phones.
-
-
+<br>
 -c, --cisco: This argument generates the hamvoip_cisco.xml file, which is specifically formatted for Cisco IP phones.
 
 -d, --dapnet: This argument generates the hamvoip_dapnet.csv file, which is a CSV file used for the DAPNET (Decentralized Amateur Paging Network) system.
